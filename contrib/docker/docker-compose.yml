@@ -66,3 +66,15 @@ services:
       - ./schemas:/var/lib/postgresql/data
       # .. or store them on some high performance storage for better results
       # - /path/to/ssd/storage:/var/lib/postgresql/data
+      #
+  proxy:
+    image: nginx
+    volumes:
+      - type: bind
+        source: ./proxy/nginx.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+    ports:
+      - 80:80
+    depends_on: 
+      - synapse
