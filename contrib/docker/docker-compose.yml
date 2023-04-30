@@ -30,25 +30,7 @@ services:
     # instance expose the TLS port directly:
     ports:
       - 8448:8008/tcp
-    # ... or use a reverse proxy, here is an example for traefik:
     labels:
-      # The following lines are valid for Traefik version 1.x:
-      #- traefik.enable=true
-        #      - traefik.frontend.rule=Host:$SYNAPSE_SERVER_NAME
-        #     - traefik.port=8008
-      # Alternatively, for Traefik version 2.0:
-      - traefik.enable=true
-      - traefik.http.routers.http-synapse.entryPoints=http
-      - traefik.http.routers.http-synapse.rule=Host(`$SYNAPSE_SERVER_NAME`)
-      - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
-      - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
-      - traefik.http.routers.http-synapse.middlewares=https_redirect
-      - traefik.http.routers.https-synapse.entryPoints=https
-      - traefik.http.routers.https-synapse.rule=Host(`$SYNAPSE_SERVER_NAME`)
-      - traefik.http.routers.https-synapse.service=synapse
-      - traefik.http.routers.https-synapse.tls=true
-      - traefik.http.services.synapse.loadbalancer.server.port=8008
-      - traefik.http.routers.https-synapse.tls.certResolver=le-ssl
 
   db:
     image: docker.io/postgres:12-alpine
@@ -67,14 +49,27 @@ services:
       # .. or store them on some high performance storage for better results
       # - /path/to/ssd/storage:/var/lib/postgresql/data
       #
-  proxy:
-    image: nginx
-    volumes:
-      - type: bind
-        source: ./proxy/nginx.conf
-        target: /etc/nginx/conf.d/default.conf
-        read_only: true
-    ports:
-      - 80:80
-    depends_on: 
-      - synapse
+      #
+  nginx:
+     build: ../../../nginx-le
+     image: umputun/nginx-le:latest
+     hostname: nginx
+     restart: always
+     container_name: nginx
+     logging:
+        driver: json-file
+        options:
+           max-size: "10m"
+           max-file: "5"
+     volumes:
+         - ./etc/ssl:/etc/nginx/ssl
+         - ./etc/service.conf:/etc/nginx/service.conf
+        ports:
+            - "80:80"
+            - "443:443"
+
+        environment:
+            - TZ=America/New_York
+            - LETSENCRYPT=true
+            - LE_EMAIL=v0atmage@gmail.com
+            - LE_FQDN=moat.chat
