@@ -24,13 +24,13 @@ services:
       # - ./files:/data
       # - /path/to/ssd:/data/uploads
       # - /path/to/large_hdd:/data/media
+    container_name: synapse
     depends_on:
       - db
     # In order to expose Synapse, remove one of the following, you might for
     # instance expose the TLS port directly:
     ports:
       - 8448:8008/tcp
-    labels:
 
   db:
     image: docker.io/postgres:12-alpine
@@ -51,25 +51,24 @@ services:
       #
       #
   nginx:
-     build: ../../../nginx-le
-     image: umputun/nginx-le:latest
-     hostname: nginx
-     restart: always
-     container_name: nginx
-     logging:
-        driver: json-file
-        options:
-           max-size: "10m"
-           max-file: "5"
-     volumes:
-         - ./etc/ssl:/etc/nginx/ssl
-         - ./etc/service.conf:/etc/nginx/service.conf
-        ports:
-            - "80:80"
-            - "443:443"
-
-        environment:
-            - TZ=America/New_York
-            - LETSENCRYPT=true
-            - LE_EMAIL=v0atmage@gmail.com
-            - LE_FQDN=moat.chat
+    build: ../../../nginx-le
+    image: umputun/nginx-le:latest
+    hostname: nginx
+    restart: always
+    container_name: nginx
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    volumes:
+      - ./etc/ssl:/etc/nginx/ssl
+      - ./etc/service.conf:/etc/nginx/service.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - TZ=America/New_York
+      - LETSENCRYPT=true
+      - LE_EMAIL=v0atmage@gmail.com  
+      - LE_FQDN=moat.chat
