@@ -51,16 +51,3 @@ services:
       # - /path/to/ssd/storage:/var/lib/postgresql/data
       #
       #
-  leproxy:
-     build: ../../../leproxy
-     image: leproxy:latest
-     hostname: leproxy
-     restart: always
-     container_name: leproxy
-     ports:
-       - 80:80
-       - 443:443/tcp 
-     environment:
-       - 55576:55576
-       - DOMAIN_NAME=moat.chat
-       - SERVICE_ADDRESS="127.0.0.1:8448"
