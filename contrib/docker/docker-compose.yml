@@ -20,7 +20,7 @@ services:
       - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
     volumes:
       # You may either store all the files in a local folder
-      - ./files:/data
+      - synapse_data:/data
       # .. or you may split this between different storage points
       # - ./files:/data
       # - /path/to/ssd:/data/uploads
@@ -51,3 +51,6 @@ services:
       # - /path/to/ssd/storage:/var/lib/postgresql/data
       #
       #
+
+volumes: 
+  synapse_data:
