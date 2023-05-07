@@ -10,6 +10,7 @@ services:
         context: ../..
         dockerfile: docker/Dockerfile
     image: docker.io/matrixdotorg/synapse:latest
+    container_name: synapse
     # Since synapse does not retry to connect to the database, restart upon
     # failure
     restart: unless-stopped
@@ -30,7 +31,6 @@ services:
     # instance expose the TLS port directly:
     ports:
       - 8448:8008/tcp
-    labels:
 
   db:
     image: docker.io/postgres:12-alpine
@@ -43,6 +43,7 @@ services:
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
     ports:
       - 5433:5432/tcp
+    container_name: db
     volumes:
       # You may store the database tables in a local folder..
       - ./schemas:/var/lib/postgresql/data
@@ -56,6 +57,10 @@ services:
      hostname: leproxy
      restart: always
      container_name: leproxy
+     ports:
+       - 80:80
+       - 443:443/tcp 
      environment:
-      - DOMAIN_NAME=moat.chat
-      - SERVICE_ADDRESS="127.0.0.1:8448"
+       - 55576:55576
+       - DOMAIN_NAME=moat.chat
+       - SERVICE_ADDRESS="127.0.0.1:8448"
